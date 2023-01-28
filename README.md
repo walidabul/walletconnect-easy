@@ -10,10 +10,15 @@ Still for every beginners in Web3 it is always a bit intimmidating to understand
 Feel free to use this code and reference and build your amazing DApps.............
 
 define provider
+
 initialize web3 object
+
 get account information from web3 object
+
 get balance from web3 object
+
 down the line smart contract deployment and interations are all possible using this web3 object.
+
 
 
 Follow my other repos for smart contract interation. 
