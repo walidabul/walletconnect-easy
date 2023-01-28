@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crypto Bazaar</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.1/dist/umd/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+<body>
+    <h1>WalletConnect-Easy</h1>
+    <h2>Code sample for Web3 beginners</h2>
+  <button id="wcbtn" onclick="connectWC()">Connect Wallet</button>
+<hr/>
+<div id="winfo"></div><br/>
+<button id="wdbtn" onclick="disconnect()">Disconnect</button>
+<hr/>
+<script type="text/javascript">
+    /*
+    **Define provider details. chain id and rpc url.
+    Example: polygon chain id is 137 and rpc is https://polygon-rpc.com/
+    Ganache chain id is 1337 and rpc http://localhost:8545
+    Alchemy and Infura can be also used as provider
+    */
+    var provider = new WalletConnectProvider.default({
+        chainId:1,
+        rpc: {
+            56: "https://bsc-dataseed.binance.org/",
+            1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
+            137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
+            // ...
+        }
+    });
+    $( document ).ready(function() {
+        const connectWalletOnPageLoad = async () => {
+        if (localStorage?.getItem('isWalletConnected') === 'true') {
+            try {
+            console.log('Wallet is already connected');
+            connectWC();
+            } catch (ex) {
+
+            }
+        }
+        else{
+            console.log('Wallet is not connected');
+            $("#wdbtn").hide();
+            $("#wcbtn").show();
+            $("#winfo").html('');
+        }
+        }
+        connectWalletOnPageLoad()
+    });
+    var connectWC = async () => {
+        await provider.enable();
+        provider.on('connect',()=>{
+            console.log('conencted-----');
+            $("#wdbtn").show();
+            $("#wcbtn").hide();        
+        });
+        provider.on('disconnect',()=>{
+            console.log('disconnect-------');
+            localStorage.setItem('isWalletConnected', false)
+            $("#wdbtn").hide();
+            $("#wcbtn").show();
+            $("#winfo").html('');
+        });
+        const web3 = new Web3(provider);
+        let account  = (await web3.eth.getAccounts())[0];
+        let network = await web3.eth.net.getId();
+        localStorage.setItem('isWalletConnected', true)
+        $("#wdbtn").show();
+        $("#wcbtn").hide(); 
+        console.log('Account:',account);
+        let bal = await web3.eth.getBalance(account);
+        // bal = web3.utils.fromWei(bal, 'ether') //convert wei to ether
+        $("#winfo").html('Address:<b>'+account+'</b><br/>Balance:<b>'+bal+'</b>');
+    }
+    var disconnect = async () => {
+      await provider.disconnect()
+      localStorage.setItem('isWalletConnected', false)
+    }
+</script>
+</body>
+</html>
